@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Mundial - Gestión de Fútbol</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background-color: #0a0e2a; color: white; font-family: 'Arial', sans-serif; }
+
+        /* NAVBAR */
+        .navbar-custom {
+            background-color: #0d1238;
+            border-bottom: 2px solid #1a3a8f;
+            padding: 12px 0;
+        }
+        .navbar-custom .nav-link {
+            color: #ccd6f6 !important;
+            font-weight: 600;
+            font-size: 14px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            padding: 8px 16px !important;
+            transition: color 0.3s;
+        }
+        .navbar-custom .nav-link:hover {
+            color: #4fc3f7 !important;
+        }
+        .navbar-brand img {
+            height: 50px;
+        }
+        .navbar-brand-text {
+            font-size: 22px;
+            font-weight: 800;
+            color: white;
+            letter-spacing: 2px;
+        }
+        .navbar-brand-text span {
+            color: #4fc3f7;
+        }
+
+        /* HERO SECTION */
+        .hero {
+            position: relative;
+            min-height: 500px;
+            background: linear-gradient(135deg, #0d1238 0%, #1a237e 50%, #0d47a1 100%);
+            display: flex;
+            align-items: center;
+            overflow: hidden;
+        }
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(74,144,226,0.15) 0%, transparent 60%);
+        }
+        .hero-content { position: relative; z-index: 2; }
+        .hero h1 {
+            font-size: 48px;
+            font-weight: 900;
+            line-height: 1.1;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+        }
+        .hero h1 span { color: #4fc3f7; }
+        .hero p {
+            font-size: 18px;
+            color: #90caf9;
+            margin-top: 15px;
+        }
+        .hero-badge {
+            display: inline-block;
+            background: #1a3a8f;
+            border: 1px solid #4fc3f7;
+            color: #4fc3f7;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            padding: 5px 15px;
+            border-radius: 20px;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+        }
+        .ball-icon {
+            font-size: 120px;
+            opacity: 0.15;
+            position: absolute;
+            right: 10%;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        /* CARDS SECTION */
+        .section-title {
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: #4fc3f7;
+            margin-bottom: 20px;
+        }
+        .card-module {
+            background: #0d1238;
+            border: 1px solid #1a3a8f;
+            border-radius: 8px;
+            overflow: hidden;
+            transition: transform 0.3s, border-color 0.3s;
+            text-decoration: none;
+            display: block;
+            color: white;
+        }
+        .card-module:hover {
+            transform: translateY(-5px);
+            border-color: #4fc3f7;
+            color: white;
+        }
+        .card-module .card-header-custom {
+            height: 8px;
+        }
+        .card-module .card-body-custom {
+            padding: 20px;
+        }
+        .card-module .card-icon {
+            font-size: 36px;
+            margin-bottom: 10px;
+        }
+        .card-module h5 {
+            font-size: 16px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+        .card-module p {
+            font-size: 13px;
+            color: #8899bb;
+            margin: 0;
+        }
+        .card-module .btn-ver {
+            margin-top: 15px;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            padding: 6px 20px;
+            border-radius: 20px;
+        }
+        .bg-asociacion { background: linear-gradient(90deg, #1565c0, #0288d1); }
+        .bg-club       { background: linear-gradient(90deg, #6a1b9a, #8e24aa); }
+        .bg-competicion{ background: linear-gradient(90deg, #c62828, #e53935); }
+        .bg-entrenador { background: linear-gradient(90deg, #1b5e20, #388e3c); }
+        .bg-jugador    { background: linear-gradient(90deg, #e65100, #f57c00); }
+
+        /* FOOTER */
+        footer {
+            background: #0d1238;
+            border-top: 1px solid #1a3a8f;
+            padding: 20px 0;
+            text-align: center;
+            color: #4a5a8a;
+            font-size: 13px;
+            margin-top: 60px;
+        }
+    </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg navbar-custom">
+    <div class="container">
+        <a class="navbar-brand d-flex align-items-center gap-2" href="/">
+            <span class="navbar-brand-text">⚽ <span>MUNDIAL</span></span>
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navMenu">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item"><a class="nav-link" href="/verAsociacion">Asociación</a></li>
+                <li class="nav-item"><a class="nav-link" href="/verClub">Club</a></li>
+                <li class="nav-item"><a class="nav-link" href="/verCompeticion">Competición</a></li>
+                <li class="nav-item"><a class="nav-link" href="/verEntrenador">Entrenador</a></li>
+                <li class="nav-item"><a class="nav-link" href="/verJugador">Jugador</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+    <div class="container">
+        <div class="hero-content">
+            <div class="hero-badge">⭐ Sistema de Gestión</div>
+            <h1>Gestión de <span>Fútbol</span><br>Mundial</h1>
+            <p>Administra asociaciones, clubes, competiciones,<br>entrenadores y jugadores en un solo lugar.</p>
+            <a href="/verClub" class="btn btn-primary mt-3 me-2" style="border-radius:20px; padding: 10px 30px;">
+                Ver Clubes
+            </a>
+            <a href="/verCompeticion" class="btn btn-outline-light mt-3" style="border-radius:20px; padding: 10px 30px;">
+                Ver Competiciones
+            </a>
+        </div>
+    </div>
+    <div class="ball-icon">⚽</div>
+</section>
+
+<!-- MÓDULOS -->
+<div class="container mt-5">
+    <div class="section-title">— Módulos del sistema</div>
+    <div class="row g-4">
+
+        <div class="col-md-4">
+            <a href="/verAsociacion" class="card-module">
+                <div class="card-header-custom bg-asociacion"></div>
+                <div class="card-body-custom">
+                    <div class="card-icon">🏛️</div>
+                    <h5>Asociación</h5>
+                    <p>Gestiona las federaciones y asociaciones de fútbol registradas en el sistema.</p>
+                    <div><span class="btn btn-sm btn-outline-info btn-ver">Ver módulo →</span></div>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-md-4">
+            <a href="/verClub" class="card-module">
+                <div class="card-header-custom bg-club"></div>
+                <div class="card-body-custom">
+                    <div class="card-icon">🏟️</div>
+                    <h5>Club</h5>
+                    <p>Registra y administra los clubes de fútbol con sus entrenadores y jugadores.</p>
+                    <div><span class="btn btn-sm btn-outline-info btn-ver">Ver módulo →</span></div>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-md-4">
+            <a href="/verCompeticion" class="card-module">
+                <div class="card-header-custom bg-competicion"></div>
+                <div class="card-body-custom">
+                    <div class="card-icon">🏆</div>
+                    <h5>Competición</h5>
+                    <p>Administra las competiciones, ligas y torneos en los que participan los clubes.</p>
+                    <div><span class="btn btn-sm btn-outline-info btn-ver">Ver módulo →</span></div>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-md-4">
+            <a href="/verEntrenador" class="card-module">
+                <div class="card-header-custom bg-entrenador"></div>
+                <div class="card-body-custom">
+                    <div class="card-icon">👔</div>
+                    <h5>Entrenador</h5>
+                    <p>Gestiona los cuerpos técnicos y entrenadores registrados en el sistema.</p>
+                    <div><span class="btn btn-sm btn-outline-info btn-ver">Ver módulo →</span></div>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-md-4">
+            <a href="/verJugador" class="card-module">
+                <div class="card-header-custom bg-jugador"></div>
+                <div class="card-body-custom">
+                    <div class="card-icon">⚽</div>
+                    <h5>Jugador</h5>
+                    <p>Registra y consulta los jugadores con su posición, dorsal y club actual.</p>
+                    <div><span class="btn btn-sm btn-outline-info btn-ver">Ver módulo →</span></div>
+                </div>
+            </a>
+        </div>
+
+    </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+    <p>⚽ Mundial — Sistema de Gestión de Fútbol &copy; 2026</p>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

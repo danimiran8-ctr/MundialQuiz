@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${club.id != null and club.id != ''} ? 'Editar Club - Mundial' : 'Nuevo Club - Mundial'">Club - Mundial</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background-color: #0a0e2a; color: white; font-family: Arial, sans-serif; }
+        .navbar-custom { background-color: #0d1238; border-bottom: 2px solid #1a3a8f; padding: 12px 0; }
+        .navbar-custom .nav-link { color: #ccd6f6 !important; font-weight: 600; font-size: 14px; letter-spacing: 1px; text-transform: uppercase; padding: 8px 16px !important; }
+        .navbar-custom .nav-link:hover { color: #4fc3f7 !important; }
+        .navbar-brand-text { font-size: 22px; font-weight: 800; color: white; letter-spacing: 2px; }
+        .navbar-brand-text span { color: #4fc3f7; }
+        .page-header { background: linear-gradient(135deg, #0d1238 0%, #4a148c 50%, #7b1fa2 100%); padding: 40px 0; margin-bottom: 30px; }
+        .page-header h2 { font-size: 32px; font-weight: 800; }
+        .page-header h2 span { color: #ce93d8; }
+        .section-badge { display: inline-block; background: rgba(74,20,140,0.5); border: 1px solid #ce93d8; color: #ce93d8; font-size: 11px; font-weight: 700; letter-spacing: 2px; padding: 4px 12px; border-radius: 20px; margin-bottom: 10px; text-transform: uppercase; }
+        .form-card { background: #0d1238; border: 1px solid #1a3a8f; border-radius: 12px; padding: 35px; }
+        .form-label { color: #90caf9; font-size: 13px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 6px; }
+        .form-control, .form-select { background: #111840; border: 1px solid #1a3a8f; color: white; border-radius: 8px; padding: 10px 15px; }
+        .form-control:focus, .form-select:focus { background: #111840; border-color: #ce93d8; color: white; box-shadow: 0 0 0 3px rgba(206,147,216,0.15); }
+        .form-control::placeholder { color: #4a5a8a; }
+        .form-select option { background: #111840; color: white; }
+        .form-text { color: #4a5a8a; font-size: 12px; }
+        .required-mark { color: #e53935; margin-left: 3px; }
+        .error-msg { color: #e53935; font-size: 12px; display: none; margin-top: 4px; }
+        .field-ok { border-color: #ce93d8 !important; }
+        .field-error { border-color: #e53935 !important; }
+        .edit-mode-banner { background: rgba(206,147,216,0.1); border: 1px solid #ce93d8; border-radius: 8px; padding: 10px 16px; margin-bottom: 24px; color: #ce93d8; font-size: 13px; font-weight: 600; }
+        .btn-guardar { background: linear-gradient(90deg, #6a1b9a, #8e24aa); border: none; border-radius: 20px; padding: 12px 35px; font-weight: 700; letter-spacing: 1px; color: white; font-size: 15px; }
+        .btn-guardar:hover { opacity: 0.9; color: white; }
+        .btn-cancelar { background: transparent; border: 1px solid #1a3a8f; border-radius: 20px; padding: 12px 35px; font-weight: 700; letter-spacing: 1px; color: #8899bb; font-size: 15px; }
+        .btn-cancelar:hover { border-color: #ce93d8; color: #ce93d8; }
+        .jugadores-section { background: #080c1f; border: 1px solid #1a3a8f; border-radius: 10px; padding: 20px; max-height: 400px; overflow-y: auto; }
+        .jugador-item { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid #1a2a5a; }
+        .jugador-item:last-child { border-bottom: none; }
+        .jugador-check { accent-color: #8e24aa; width: 18px; height: 18px; cursor: pointer; }
+        .jugador-label { color: #ccd6f6; font-size: 14px; cursor: pointer; flex: 1; }
+        .jugador-label span { color: #8899bb; font-size: 12px; margin-left: 8px; }
+        .contador-jugadores { background: #1a237e; border: 1px solid #ce93d8; border-radius: 8px; padding: 10px 16px; margin-bottom: 16px; font-size: 14px; }
+        .contador-jugadores strong { color: #ce93d8; }
+        .warning-msg { color: #e53935; font-size: 13px; display: none; margin-top: 8px; font-weight: 600; }
+        footer { background: #0d1238; border-top: 1px solid #1a3a8f; padding: 20px 0; text-align: center; color: #4a5a8a; font-size: 13px; margin-top: 60px; }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-custom">
+    <div class="container">
+        <a class="navbar-brand" href="/"><span class="navbar-brand-text">⚽ <span>MUNDIAL</span></span></a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navMenu">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item"><a class="nav-link" href="/verAsociacion">Asociación</a></li>
+                <li class="nav-item"><a class="nav-link active" href="/verClub">Club</a></li>
+                <li class="nav-item"><a class="nav-link" href="/verCompeticion">Competición</a></li>
+                <li class="nav-item"><a class="nav-link" href="/verEntrenador">Entrenador</a></li>
+                <li class="nav-item"><a class="nav-link" href="/verJugador">Jugador</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="page-header">
+    <div class="container">
+        <div class="section-badge">🏟️ Club</div>
+        <h2 th:if="${club.id != null and club.id != ''}">Editar <span>Club</span></h2>
+        <h2 th:if="${club.id == null or club.id == ''}">Registrar <span>Nuevo Club</span></h2>
+        <p style="color:#e1bee7; margin-top:8px;">Todos los campos son obligatorios — mínimo 22 jugadores</p>
+    </div>
+</div>
+
+<div class="container mb-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="form-card">
+
+                <div class="edit-mode-banner" th:if="${club.id != null and club.id != ''}">
+                    ✏️ Modo edición — modificando club: <span th:text="${club.id}"></span>
+                </div>
+
+                <form action="/verClub/guardarClub"
+                      method="post"
+                      onsubmit="return validarFormulario()">
+
+                    <!-- ID oculto en edición -->
+                    <input type="hidden" name="id" th:value="${club.id}" th:if="${club.id != null and club.id != ''}"/>
+
+                    <!-- ID visible en creación -->
+                    <div class="mb-4" th:if="${club.id == null or club.id == ''}">
+                        <label class="form-label">ID <span class="required-mark">*</span></label>
+                        <input type="text"
+                               name="id"
+                               class="form-control"
+                               id="idClub"
+                               placeholder="Ej: CLB00001"
+                               minlength="8"
+                               maxlength="10"
+                               required>
+                        <div class="form-text">Entre 8 y 10 caracteres (sin espacios)</div>
+                        <div id="errorId" class="error-msg">⚠ El ID debe tener entre 8 y 10 caracteres</div>
+                    </div>
+
+                    <!-- Nombre -->
+                    <div class="mb-4">
+                        <label class="form-label">Nombre del Club <span class="required-mark">*</span></label>
+                        <input type="text"
+                               name="nombre"
+                               class="form-control"
+                               id="nombre"
+                               th:value="${club.nombre}"
+                               placeholder="Ej: Real Madrid"
+                               required>
+                        <div id="errorNombre" class="error-msg">⚠ El nombre es obligatorio</div>
+                    </div>
+
+                    <!-- Asociacion -->
+                    <div class="mb-4">
+                        <label class="form-label">Asociación <span class="required-mark">*</span></label>
+                        <select class="form-select" id="asociacion" name="asociacionId" required>
+                            <option value="">— Selecciona una asociación —</option>
+                            <option th:each="asoc : ${listaAsociacion}"
+                                    th:value="${asoc.id}"
+                                    th:text="${asoc.nombre + ' (' + asoc.pais + ')'}"
+                                    th:selected="${club.asociacion != null and club.asociacion.id == asoc.id}">
+                            </option>
+                        </select>
+                        <div id="errorAsociacion" class="error-msg">⚠ Debes seleccionar una asociación</div>
+                    </div>
+
+                    <!-- Entrenador -->
+                    <div class="mb-4">
+                        <label class="form-label">Entrenador <span class="required-mark">*</span></label>
+                        <select class="form-select" id="entrenador" name="entrenadorId" required>
+                            <option value="">— Selecciona un entrenador —</option>
+                            <option th:each="ent : ${listaEntrenador}"
+                                    th:value="${ent.id}"
+                                    th:text="${ent.nombre + ' ' + ent.apellido + ' (' + ent.nacionalidad + ')'}"
+                                    th:selected="${club.entrenador != null and club.entrenador.id == ent.id}">
+                            </option>
+                        </select>
+                        <div id="errorEntrenador" class="error-msg">⚠ Debes seleccionar un entrenador</div>
+                    </div>
+
+                    <!-- Competicion -->
+                    <div class="mb-4">
+                        <label class="form-label">Competición <span class="required-mark">*</span></label>
+                        <select class="form-select" id="competicion" name="competicionId" required>
+                            <option value="">— Selecciona una competición —</option>
+                            <option th:each="comp : ${listaCompeticion}"
+                                    th:value="${comp.id}"
+                                    th:text="${comp.nombre}"
+                                    th:selected="${club.competiciones != null and !#lists.isEmpty(club.competiciones) and club.competiciones[0].id == comp.id}">
+                            </option>
+                        </select>
+                        <div id="errorCompeticion" class="error-msg">⚠ Debes seleccionar una competición</div>
+                    </div>
+
+                    <!-- Jugadores -->
+                    <div class="mb-4">
+                        <label class="form-label">
+                            Jugadores <span class="required-mark">*</span>
+                            <span style="color:#8899bb; font-size:11px; font-weight:400;">(mínimo 22)</span>
+                        </label>
+                        <div class="contador-jugadores">
+                            Jugadores seleccionados: <strong id="contadorJugadores">0</strong> / mínimo 22
+                        </div>
+                        <div class="jugadores-section">
+                            <div th:if="${#lists.isEmpty(listaJugador)}"
+                                 style="color:#4a5a8a; text-align:center; padding:20px;">
+                                No hay jugadores disponibles.
+                                <a href="/verJugador/formJugador" style="color:#ce93d8;">Registrar jugadores</a>
+                            </div>
+                            <div th:each="jug : ${listaJugador}" class="jugador-item">
+                                <input type="checkbox"
+                                       class="jugador-check jugador-checkbox"
+                                       th:id="'jug_' + ${jug.id}"
+                                       name="jugadoresIds"
+                                       th:value="${jug.id}"
+                                       th:checked="${club.jugadores != null and club.jugadores.contains(jug)}"
+                                       onchange="actualizarContador()">
+                                <label th:for="'jug_' + ${jug.id}" class="jugador-label">
+                                    <strong th:text="${jug.nombre + ' ' + jug.apellido}"></strong>
+                                    <span th:text="'— ' + ${jug.posicion} + ' | #' + ${jug.numero}"></span>
+                                </label>
+                            </div>
+                        </div>
+                        <div id="errorJugadores" class="warning-msg">
+                            ⚠ Debes seleccionar mínimo 22 jugadores
+                        </div>
+                    </div>
+
+                    <div class="d-flex gap-3 mt-4">
+                        <button type="submit" class="btn btn-guardar">
+                            <span th:if="${club.id == null or club.id == ''}">💾 Guardar</span>
+                            <span th:if="${club.id != null and club.id != ''}">✏️ Actualizar</span>
+                        </button>
+                        <a href="/verClub" class="btn btn-cancelar">✖ Cancelar</a>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer><p>⚽ Mundial — Sistema de Gestión de Fútbol &copy; 2026</p></footer>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+function actualizarContador() {
+    const checks = document.querySelectorAll('.jugador-checkbox:checked');
+    const contador = document.getElementById('contadorJugadores');
+    contador.textContent = checks.length;
+    if (checks.length >= 22) {
+        contador.style.color = '#69f0ae';
+        document.getElementById('errorJugadores').style.display = 'none';
+    } else {
+        contador.style.color = '#e53935';
+    }
+}
+
+function validarFormulario() {
+    let valido = true;
+
+    // Validar ID solo en creación
+    const campoId = document.getElementById('idClub');
+    if (campoId) {
+        const id = campoId.value.trim();
+        const errorId = document.getElementById('errorId');
+        if (id.length < 8 || id.length > 10 || id.includes(' ')) {
+            errorId.style.display = 'block';
+            campoId.classList.add('field-error');
+            valido = false;
+        } else {
+            errorId.style.display = 'none';
+            campoId.classList.remove('field-error');
+        }
+    }
+
+    // Validar Nombre
+    const nombre = document.getElementById('nombre');
+    const errorNombre = document.getElementById('errorNombre');
+    if (nombre.value.trim() === '') {
+        errorNombre.style.display = 'block';
+        nombre.classList.add('field-error');
+        valido = false;
+    } else {
+        errorNombre.style.display = 'none';
+        nombre.classList.remove('field-error');
+    }
+
+    // Validar Asociacion
+    const asociacion = document.getElementById('asociacion');
+    const errorAsociacion = document.getElementById('errorAsociacion');
+    if (asociacion.value === '') {
+        errorAsociacion.style.display = 'block';
+        asociacion.classList.add('field-error');
+        valido = false;
+    } else {
+        errorAsociacion.style.display = 'none';
+        asociacion.classList.remove('field-error');
+    }
+
+    // Validar Entrenador
+    const entrenador = document.getElementById('entrenador');
+    const errorEntrenador = document.getElementById('errorEntrenador');
+    if (entrenador.value === '') {
+        errorEntrenador.style.display = 'block';
+        entrenador.classList.add('field-error');
+        valido = false;
+    } else {
+        errorEntrenador.style.display = 'none';
+        entrenador.classList.remove('field-error');
+    }
+
+    // Validar Competicion
+    const competicion = document.getElementById('competicion');
+    const errorCompeticion = document.getElementById('errorCompeticion');
+    if (competicion.value === '') {
+        errorCompeticion.style.display = 'block';
+        competicion.classList.add('field-error');
+        valido = false;
+    } else {
+        errorCompeticion.style.display = 'none';
+        competicion.classList.remove('field-error');
+    }
+
+    // Validar minimo 22 jugadores
+    const jugadoresSeleccionados = document.querySelectorAll('.jugador-checkbox:checked');
+    const errorJugadores = document.getElementById('errorJugadores');
+    if (jugadoresSeleccionados.length < 22) {
+        errorJugadores.style.display = 'block';
+        valido = false;
+    } else {
+        errorJugadores.style.display = 'none';
+    }
+
+    return valido;
+}
+
+// Validacion en tiempo real ID
+const campoId = document.getElementById('idClub');
+if (campoId) {
+    campoId.addEventListener('input', function () {
+        const val = this.value.trim();
+        const errorId = document.getElementById('errorId');
+        if (val.length >= 8 && val.length <= 10 && !val.includes(' ')) {
+            errorId.style.display = 'none';
+            this.classList.add('field-ok');
+            this.classList.remove('field-error');
+        } else {
+            this.classList.add('field-error');
+            this.classList.remove('field-ok');
+        }
+    });
+}
+
+// Inicializar contador al cargar
+actualizarContador();
+</script>
+</body>
+</html>
