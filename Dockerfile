@@ -1,5 +1,5 @@
 
-FROM openjdk:17
+FROM eclipse-temurin:21-jre
 
 COPY ./MUNDIAL/target/MUNDIAL-1.jar app.jar
 
