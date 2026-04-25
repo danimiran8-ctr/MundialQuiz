@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${jugador.id != null and jugador.id != ''} ? 'Editar Jugador - Mundial' : 'Nuevo Jugador - Mundial'">Jugador - Mundial</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background-color: #0a0e2a; color: white; font-family: Arial, sans-serif; }
+        .navbar-custom { background-color: #0d1238; border-bottom: 2px solid #1a3a8f; padding: 12px 0; }
+        .navbar-custom .nav-link { color: #ccd6f6 !important; font-weight: 600; font-size: 14px; letter-spacing: 1px; text-transform: uppercase; padding: 8px 16px !important; }
+        .navbar-custom .nav-link:hover { color: #4fc3f7 !important; }
+        .navbar-brand-text { font-size: 22px; font-weight: 800; color: white; letter-spacing: 2px; }
+        .navbar-brand-text span { color: #4fc3f7; }
+
+        .page-header { background: linear-gradient(135deg, #0d1238 0%, #e65100 50%, #f57c00 100%); padding: 40px 0; margin-bottom: 30px; }
+        .page-header h2 { font-size: 32px; font-weight: 800; }
+        .page-header h2 span { color: #ffe082; }
+        .section-badge { display: inline-block; background: rgba(230,81,0,0.4); border: 1px solid #ffe082; color: #ffe082; font-size: 11px; font-weight: 700; letter-spacing: 2px; padding: 4px 12px; border-radius: 20px; margin-bottom: 10px; text-transform: uppercase; }
+
+        .form-card { background: #0d1238; border: 1px solid #1a3a8f; border-radius: 12px; padding: 35px; }
+        .form-label { color: #90caf9; font-size: 13px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 6px; }
+        .form-control, .form-select { background: #111840; border: 1px solid #1a3a8f; color: white; border-radius: 8px; padding: 10px 15px; }
+        .form-control:focus, .form-select:focus { background: #111840; border-color: #f57c00; color: white; box-shadow: 0 0 0 3px rgba(245,124,0,0.15); }
+        .form-control::placeholder { color: #4a5a8a; }
+        .form-select option { background: #111840; color: white; }
+        .form-text { color: #4a5a8a; font-size: 12px; }
+        .required-mark { color: #e53935; margin-left: 3px; }
+
+        .btn-guardar { background: linear-gradient(90deg, #e65100, #f57c00); border: none; border-radius: 20px; padding: 12px 35px; font-weight: 700; letter-spacing: 1px; color: white; font-size: 15px; }
+        .btn-guardar:hover { opacity: 0.9; color: white; }
+        .btn-cancelar { background: transparent; border: 1px solid #1a3a8f; border-radius: 20px; padding: 12px 35px; font-weight: 700; letter-spacing: 1px; color: #8899bb; font-size: 15px; }
+        .btn-cancelar:hover { border-color: #f57c00; color: #f57c00; }
+
+        .error-msg { color: #e53935; font-size: 12px; display: none; margin-top: 4px; }
+        .field-ok { border-color: #f57c00 !important; }
+        .field-error { border-color: #e53935 !important; }
+
+        /* Indicador modo edición */
+        .edit-mode-banner { background: rgba(245,124,0,0.1); border: 1px solid #f57c00; border-radius: 8px; padding: 10px 16px; margin-bottom: 24px; color: #ffe082; font-size: 13px; font-weight: 600; }
+
+        footer { background: #0d1238; border-top: 1px solid #1a3a8f; padding: 20px 0; text-align: center; color: #4a5a8a; font-size: 13px; margin-top: 60px; }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-custom">
+    <div class="container">
+        <a class="navbar-brand" href="/"><span class="navbar-brand-text">⚽ <span>MUNDIAL</span></span></a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navMenu">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item"><a class="nav-link" href="/verAsociacion">Asociación</a></li>
+                <li class="nav-item"><a class="nav-link" href="/verClub">Club</a></li>
+                <li class="nav-item"><a class="nav-link" href="/verCompeticion">Competición</a></li>
+                <li class="nav-item"><a class="nav-link" href="/verEntrenador">Entrenador</a></li>
+                <li class="nav-item"><a class="nav-link active" href="/verJugador">Jugador</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="page-header">
+    <div class="container">
+        <div class="section-badge">⚽ Jugador</div>
+        <h2 th:if="${jugador.id != null and jugador.id != ''}">Editar <span>Jugador</span></h2>
+        <h2 th:if="${jugador.id == null or jugador.id == ''}">Registrar <span>Nuevo Jugador</span></h2>
+        <p style="color:#ffe0b2; margin-top:8px;">Todos los campos son obligatorios</p>
+    </div>
+</div>
+
+<div class="container mb-5">
+    <div class="row justify-content-center">
+        <div class="col-md-7">
+            <div class="form-card">
+
+                <!-- Banner modo edición -->
+                <div class="edit-mode-banner" th:if="${jugador.id != null and jugador.id != ''}">
+                    ✏️ Modo edición — modificando jugador: <span th:text="${jugador.id}"></span>
+                </div>
+
+              <!--   <form th:action="${jugador.id != null and jugador.id != ''} ? @{/verJugador/actualizarJugador} : @{/verJugador/guardarJugador}"
+                      th:object="${jugador}"
+                      method="post"
+                      onsubmit="return validarFormulario()">-->
+					  
+					  <form th:action="@{/verJugador/guardarJugador}"
+					        th:object="${jugador}"
+					        method="post"
+					        onsubmit="return validarFormulario()">
+
+                    <!-- Campo oculto para edición -->
+                    <input type="hidden" th:field="*{id}" th:if="${jugador.id != null and jugador.id != ''}"/>
+
+                    <!-- ID (solo visible al crear) -->
+                    <div class="mb-4" th:if="${jugador.id == null or jugador.id == ''}">
+                        <label class="form-label">ID <span class="required-mark">*</span></label>
+                        <input type="text"
+                               th:field="*{id}"
+                               class="form-control"
+                               id="idJugador"
+                               placeholder="Ej: JUG00001"
+                               minlength="8"
+                               maxlength="10"
+                               required>
+                        <div class="form-text">Entre 8 y 10 caracteres (sin espacios)</div>
+                        <div id="errorId" class="error-msg">⚠ El ID debe tener entre 8 y 10 caracteres</div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label">Nombre <span class="required-mark">*</span></label>
+                        <input type="text"
+                               th:field="*{nombre}"
+                               class="form-control"
+                               id="nombre"
+                               placeholder="Ej: Lionel"
+                               required>
+                        <div id="errorNombre" class="error-msg">⚠ El nombre es obligatorio</div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label">Apellido <span class="required-mark">*</span></label>
+                        <input type="text"
+                               th:field="*{apellido}"
+                               class="form-control"
+                               id="apellido"
+                               placeholder="Ej: Messi"
+                               required>
+                        <div id="errorApellido" class="error-msg">⚠ El apellido es obligatorio</div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label">Edad <span class="required-mark">*</span></label>
+                        <input type="number"
+                               th:field="*{edad}"
+                               class="form-control"
+                               id="edad"
+                               placeholder="Ej: 25"
+                               min="15"
+                               max="50"
+                               required>
+                        <div class="form-text">Entre 15 y 50 años</div>
+                        <div id="errorEdad" class="error-msg">⚠ La edad debe estar entre 15 y 50 años</div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label">Posición <span class="required-mark">*</span></label>
+                        <select th:field="*{posicion}"
+                                class="form-select"
+                                id="posicion"
+                                required>
+                            <option value="" disabled selected>— Selecciona una posición —</option>
+                            <option value="Portero">Portero</option>
+                            <option value="Defensa Central">Defensa Central</option>
+                            <option value="Lateral Derecho">Lateral Derecho</option>
+                            <option value="Lateral Izquierdo">Lateral Izquierdo</option>
+                            <option value="Mediocampista">Mediocampista</option>
+                            <option value="Mediocampista Defensivo">Mediocampista Defensivo</option>
+                            <option value="Mediocampista Ofensivo">Mediocampista Ofensivo</option>
+                            <option value="Extremo Derecho">Extremo Derecho</option>
+                            <option value="Extremo Izquierdo">Extremo Izquierdo</option>
+                            <option value="Delantero Centro">Delantero Centro</option>
+                        </select>
+                        <div id="errorPosicion" class="error-msg">⚠ Debes seleccionar una posición</div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label">Nacionalidad <span class="required-mark">*</span></label>
+                        <input type="text"
+                               th:field="*{nacionalidad}"
+                               class="form-control"
+                               id="nacionalidad"
+                               placeholder="Ej: Argentino"
+                               required>
+                        <div id="errorNacionalidad" class="error-msg">⚠ La nacionalidad es obligatoria</div>
+                    </div>
+
+                    <div class="d-flex gap-3 mt-4">
+						<button type="submit" class="btn btn-guardar">
+						    <span th:if="${jugador.id == null or jugador.id == ''}">💾 Guardar</span>
+						    <span th:if="${jugador.id != null and jugador.id != ''}">✏️ Actualizar</span>
+						</button>
+                        <a href="/verJugador" class="btn btn-cancelar">✖ Cancelar</a>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer><p>⚽ Mundial — Sistema de Gestión de Fútbol &copy; 2026</p></footer>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+function validarFormulario() {
+    let valido = true;
+
+    // Validar ID solo en modo creación
+    const campoId = document.getElementById('idJugador');
+    if (campoId) {
+        const id = campoId.value.trim();
+        const errorId = document.getElementById('errorId');
+        if (id.length < 8 || id.length > 10 || id.includes(' ')) {
+            errorId.style.display = 'block';
+            campoId.classList.add('field-error');
+            campoId.classList.remove('field-ok');
+            valido = false;
+        } else {
+            errorId.style.display = 'none';
+            campoId.classList.add('field-ok');
+            campoId.classList.remove('field-error');
+        }
+    }
+
+    // Validar Nombre
+    const nombre = document.getElementById('nombre');
+    const errorNombre = document.getElementById('errorNombre');
+    if (nombre.value.trim() === '') {
+        errorNombre.style.display = 'block';
+        nombre.classList.add('field-error');
+        valido = false;
+    } else {
+        errorNombre.style.display = 'none';
+        nombre.classList.remove('field-error');
+    }
+
+    // Validar Apellido
+    const apellido = document.getElementById('apellido');
+    const errorApellido = document.getElementById('errorApellido');
+    if (apellido.value.trim() === '') {
+        errorApellido.style.display = 'block';
+        apellido.classList.add('field-error');
+        valido = false;
+    } else {
+        errorApellido.style.display = 'none';
+        apellido.classList.remove('field-error');
+    }
+
+    // Validar Edad
+    const edad = document.getElementById('edad');
+    const errorEdad = document.getElementById('errorEdad');
+    if (edad.value === '' || parseInt(edad.value) < 15 || parseInt(edad.value) > 50) {
+        errorEdad.style.display = 'block';
+        edad.classList.add('field-error');
+        valido = false;
+    } else {
+        errorEdad.style.display = 'none';
+        edad.classList.remove('field-error');
+    }
+
+    // Validar Posición
+    const posicion = document.getElementById('posicion');
+    const errorPosicion = document.getElementById('errorPosicion');
+    if (posicion.value === '') {
+        errorPosicion.style.display = 'block';
+        posicion.classList.add('field-error');
+        valido = false;
+    } else {
+        errorPosicion.style.display = 'none';
+        posicion.classList.remove('field-error');
+    }
+
+    // Validar Dorsal
+    const dorsal = document.getElementById('dorsal');
+    const errorDorsal = document.getElementById('errorDorsal');
+    if (dorsal.value === '' || parseInt(dorsal.value) < 1 || parseInt(dorsal.value) > 99) {
+        errorDorsal.style.display = 'block';
+        dorsal.classList.add('field-error');
+        valido = false;
+    } else {
+        errorDorsal.style.display = 'none';
+        dorsal.classList.remove('field-error');
+    }
+
+    // Validar Nacionalidad
+    const nacionalidad = document.getElementById('nacionalidad');
+    const errorNacionalidad = document.getElementById('errorNacionalidad');
+    if (nacionalidad.value.trim() === '') {
+        errorNacionalidad.style.display = 'block';
+        nacionalidad.classList.add('field-error');
+        valido = false;
+    } else {
+        errorNacionalidad.style.display = 'none';
+        nacionalidad.classList.remove('field-error');
+    }
+
+    return valido;
+}
+
+// Validación en tiempo real para ID
+const campoId = document.getElementById('idJugador');
+if (campoId) {
+    campoId.addEventListener('input', function () {
+        const errorId = document.getElementById('errorId');
+        const val = this.value.trim();
+        if (val.length >= 8 && val.length <= 10 && !val.includes(' ')) {
+            errorId.style.display = 'none';
+            this.classList.add('field-ok');
+            this.classList.remove('field-error');
+        } else {
+            this.classList.add('field-error');
+            this.classList.remove('field-ok');
+        }
+    });
+}
+
+// Validación en tiempo real para los demás campos
+['nombre', 'apellido', 'nacionalidad'].forEach(function(id) {
+    const campo = document.getElementById(id);
+    if (campo) {
+        campo.addEventListener('input', function () {
+            const error = document.getElementById('error' + id.charAt(0).toUpperCase() + id.slice(1));
+            if (this.value.trim() !== '') {
+                if (error) error.style.display = 'none';
+                this.classList.remove('field-error');
+            }
+        });
+    }
+});
+
+document.getElementById('posicion').addEventListener('change', function () {
+    if (this.value !== '') {
+        document.getElementById('errorPosicion').style.display = 'none';
+        this.classList.remove('field-error');
+    }
+});
+</script>
+</body>
+</html>
